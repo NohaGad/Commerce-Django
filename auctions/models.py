@@ -22,6 +22,8 @@ class AuctionListing(models.Model):
 class Bid(models.Model):
     pass
 
-class CommentsOnAuction(models.Model):
-    pass
+class Comment(models.Model):
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.CharField(max_length=256)
+    auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
 
