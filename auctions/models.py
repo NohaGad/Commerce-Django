@@ -20,7 +20,9 @@ class AuctionListing(models.Model):
        
 
 class Bid(models.Model):
-    pass
+    bidder = models.ForeignKey(User, on_delete=models.PROTECT , default=None)
+    price = models.FloatField(default = 0.0)
+    auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, default = None)
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE)
