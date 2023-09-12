@@ -6,7 +6,7 @@ class User(AbstractUser):
     pass 
 
 class Category(models.Model):
-    pass
+    name = models.CharField(max_length=64)
 
 class AuctionListing(models.Model):
     title = models.CharField(max_length=64)
