@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     pass 
@@ -34,6 +35,15 @@ class Bid(models.Model):
     bidder = models.ForeignKey(User, on_delete=models.PROTECT , default=None)
     price = models.FloatField(default = 0.0)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, default = None)
+    
+    def clean(self):
+        if self.auction.current_price == None and self.price < self.auction.starting_price:
+            raise ValidationError({'price': f"Value must be greater than or equal starting price: {self.auction.starting_price}!"})    
+        elif self.auction.current_price != None and self.price <= self.auction.current_price:
+            raise ValidationError({'price': f"Value must be greater than current price: {self.auction.current_price}!"})
+        else:
+            return self.price
+             
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE)
