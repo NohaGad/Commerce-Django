@@ -8,6 +8,9 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=64)
+    
+    def __str__(self):
+        return self.name
 
 class AuctionListing(models.Model):
     title = models.CharField(max_length=64)
@@ -29,6 +32,9 @@ class AuctionListing(models.Model):
             return None
         bids = self.bid_set.order_by('-price')
         return bids[0].bidder if bids else None
+    
+    def __str__(self):
+        return self.title
         
 
 class Bid(models.Model):
@@ -43,10 +49,17 @@ class Bid(models.Model):
             raise ValidationError({'price': f"Value must be greater than current price: {self.auction.current_price}!"})
         else:
             return self.price
+    def __str__(self):
+        return f"{self.bidder.username} bade {self.price} on {self.auction}"
              
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=256)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.commenter.username} commented {self.text} on {self.auction}"
+    
+    
 
