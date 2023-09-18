@@ -111,8 +111,10 @@ def create_auction(request):
             {"form": NewAuctionForm()},
         )
  
-def listing(request):
-    return HttpResponse("HELLO")  
+def listing(request, id):
+    auction_listing = get_object_or_404(AuctionListing , id=id)
+    return HttpResponse(auction_listing.title) 
+    
 
 def category(request):
     if not request.user.is_authenticated:
