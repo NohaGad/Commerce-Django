@@ -1,0 +1,14 @@
+
+<div class="row" >
+    {% for auction in active_auctions %}
+        <div class="card col-4" >
+            <img class="card-img-top" height="286px"  src={% firstof auction.photo default_image %} style= alt="Listing Image">
+            <div class="card-body">
+            <h5 class="card-title">{{auction.title}}</h5>
+            <h6 class="card-title"> {% firstof auction.current_price auction.starting_price %}</h6>
+            <p class="card-text">{{auction.description}}</p>
+            <a href="#" class="btn btn-primary"> View </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
