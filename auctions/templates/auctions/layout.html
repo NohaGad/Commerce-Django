@@ -22,11 +22,18 @@
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'auctions:category' %}">Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'auctions:watchlist' %}">Watchlist</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:create' %}">Create Listing</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:logout' %}">Log Out</a>
                 </li>
+                
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:login' %}">Log In</a>

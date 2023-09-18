@@ -109,5 +109,13 @@ def create_auction(request):
  
 def listing(request):
     return HttpResponse("HELLO")  
-  
+
+def watchlist(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))  
+    active_auctions = request.user.watchlist.all()
+    DEFAULT_IMAGE ='data:image/svg+xml;charset=UTF-8,<svg%20width%3D"286"%20height%3D"180"%20xmlns%3D"http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg"%20viewBox%3D"0%200%20286%20180"%20preserveAspectRatio%3D"none"><defs><style%20type%3D"text%2Fcss">%23holder_18aa591097b%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20<%2Fstyle><%2Fdefs><g%20id%3D"holder_18aa591097b"><rect%20width%3D"286"%20height%3D"180"%20fill%3D"%23777"><%2Frect><g><text%20x%3D"107.1937484741211"%20y%3D"96.24000034332275">286x180<%2Ftext><%2Fg><%2Fg><%2Fsvg>'
+    return render(request, "auctions/watchlist.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})
+ 
+        
         
