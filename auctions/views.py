@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
+
 
 from .models import User, AuctionListing, Category
 
@@ -121,7 +123,8 @@ def category(request):
 def category_listing(request,category):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))
-    category_obj = Category.objects.get(name=category)
+    query_set= Category.objects.filter(name=category)
+    category_obj = get_object_or_404(query_set)
     active_auctions = category_obj.auctionlisting_set.all()
     return render(request, "auctions/category_list.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE,"category":category_obj})
  
