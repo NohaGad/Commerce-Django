@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    
+    <div class="container-fluid">
+        <h2>{{auction_listing.title}}</h2>
+        <img src={% firstof auction_listing.photo default_image %} class="img-fluid" alt="Listing Image">
+        <h4 class="mt-3"> {% firstof auction_listing.current_price auction_listing.starting_price %}</h4>
+        <p>{{auction_listing.description}}</p>
+    </div>
+ 
+{% endblock %}
