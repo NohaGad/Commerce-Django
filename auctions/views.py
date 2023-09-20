@@ -8,7 +8,7 @@ from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 
 
-from .models import User, AuctionListing, Category, Bid
+from .models import User, AuctionListing, Category, Bid, Comment
 
 DEFAULT_IMAGE ='data:image/svg+xml;charset=UTF-8,<svg%20width%3D"286"%20height%3D"180"%20xmlns%3D"http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg"%20viewBox%3D"0%200%20286%20180"%20preserveAspectRatio%3D"none"><defs><style%20type%3D"text%2Fcss">%23holder_18aa591097b%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20<%2Fstyle><%2Fdefs><g%20id%3D"holder_18aa591097b"><rect%20width%3D"286"%20height%3D"180"%20fill%3D"%23777"><%2Frect><g><text%20x%3D"107.1937484741211"%20y%3D"96.24000034332275">286x180<%2Ftext><%2Fg><%2Fg><%2Fsvg>'
 
@@ -29,6 +29,11 @@ class BiddingForm(ModelForm):
     class Meta:
         model = Bid
         fields = [ "price"]
+        
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text"]
         
 def index(request):
     active_auctions = AuctionListing.objects.filter(is_active = True)
@@ -119,7 +124,10 @@ def create_auction(request):
 def listing(request, id):
     auction_listing = get_object_or_404(AuctionListing , id=id)
     bidding_form = BiddingForm()
-    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form}) 
+    comment_form = CommentForm()
+    listing_comments = Comment.objects.filter(auction = auction_listing)
+    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments
+                                                        }) 
     
 def bidding(request, id):
     if not request.user.is_authenticated:
@@ -140,7 +148,26 @@ def bidding(request, id):
     else:
         return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
             
-        
+
+def comment_view(request, id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    auction_listing = get_object_or_404(AuctionListing , id=id)
+    if request.method == "POST":
+        comment = Comment()
+        comment.commenter = request.user
+        comment.auction = auction_listing
+        form = CommentForm(request.POST,instance=comment)
+        if form.is_valid():
+            comment.text = form.cleaned_data["text"]
+            comment.save()
+            return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+        else:
+            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "comment_form": form}) 
+
+    else:
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+      
 def category(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))
