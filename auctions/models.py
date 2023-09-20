@@ -55,7 +55,7 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.CharField(max_length=256)
+    text = models.CharField(max_length=512)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
     
     def __str__(self):

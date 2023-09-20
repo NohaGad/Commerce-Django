@@ -126,8 +126,8 @@ def listing(request, id):
     bidding_form = BiddingForm()
     comment_form = CommentForm()
     listing_comments = Comment.objects.filter(auction = auction_listing)
-    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments
-                                                        }) 
+    is_winner = request.user == auction_listing.winner
+    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments,"is_winner":is_winner}) 
     
 def bidding(request, id):
     if not request.user.is_authenticated:

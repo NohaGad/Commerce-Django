@@ -1,7 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    
+    {% if is_winner %}
+    <div class="alert alert-success" role="alert">
+        Congratulations You won this auction{{auction_listing.winner}}
+    </div>
+    {% endif %}
     <div class="container-fluid">
         <h2>{{auction_listing.title}}</h2>
         <img src={% firstof auction_listing.photo default_image %} class="img-fluid" alt="Listing Image">
@@ -19,6 +23,27 @@
                 {{ bidding_form.price}}
             </div>
             <input class="btn btn-primary" type="submit" value="Bid">
+        </form>
+        <div>
+            {% for comment in listing_comments %}
+                <div>
+                    <h6 class="card-title"> {{comment.commenter}}</h6>
+                    <p class="card-text">{{comment.text}}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <form action="{% url 'auctions:comment' id=auction_listing.id %}"  method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {% if comment_form.text.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{comment_form.text.errors}}
+                     </div>
+                {% endif %}
+                <label for="id_text">Comment here:</label>
+                {{ comment_form.text}}
+            </div>
+            <input class="btn btn-primary" type="submit" value="Add a comment">
         </form>
     </div>
  
