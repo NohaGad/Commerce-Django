@@ -7,6 +7,19 @@
         <img src={% firstof auction_listing.photo default_image %} class="img-fluid" alt="Listing Image">
         <h4 class="mt-3"> {% firstof auction_listing.current_price auction_listing.starting_price %}</h4>
         <p>{{auction_listing.description}}</p>
+        <form action="{% url 'auctions:bidding' id=auction_listing.id %}"  method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {% if bidding_form.price.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{bidding_form.price.errors}}
+                     </div>
+                {% endif %}
+                <label for="id_price">{{ bidding_form.price.label }}:</label>
+                {{ bidding_form.price}}
+            </div>
+            <input class="btn btn-primary" type="submit" value="Bid">
+        </form>
     </div>
  
 {% endblock %}

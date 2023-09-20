@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 
 
@@ -24,7 +25,11 @@ class NewAuctionForm(forms.Form):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
     
-
+class BiddingForm(ModelForm):
+    class Meta:
+        model = Bid
+        fields = [ "price"]
+        
 def index(request):
     active_auctions = AuctionListing.objects.filter(is_active = True)
     return render(request, "auctions/index.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})
@@ -113,9 +118,29 @@ def create_auction(request):
  
 def listing(request, id):
     auction_listing = get_object_or_404(AuctionListing , id=id)
-    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE}) 
+    bidding_form = BiddingForm()
+    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form}) 
     
+def bidding(request, id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    auction_listing = get_object_or_404(AuctionListing , id=id)
+    if request.method == "POST":
+        bid = Bid()
+        bid.bidder = request.user
+        bid.auction = auction_listing
+        form = BiddingForm(request.POST,instance=bid)
+        if form.is_valid():
+            bid.price = form.cleaned_data["price"]
+            bid.save()
+            return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+        else:
+            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": form}) 
 
+    else:
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+            
+        
 def category(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))
