@@ -37,7 +37,8 @@ class CommentForm(ModelForm):
         
 def index(request):
     active_auctions = AuctionListing.objects.filter(is_active = True)
-    return render(request, "auctions/index.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})
+    return render(request, "auctions/index.html", {"active_auctions":active_auctions,
+                                                   "default_image":DEFAULT_IMAGE})
 
 
 def login_view(request):
@@ -129,7 +130,17 @@ def listing(request, id):
     is_winner = request.user == auction_listing.winner
     is_owner = request.user == auction_listing.owner
     is_active = auction_listing.is_active
-    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments,"is_winner":is_winner, "is_owner":is_owner,"is_active":is_active}) 
+    watchlist = request.user.watchlist.all()
+    is_in_watchlist = auction_listing in watchlist
+    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , 
+                                                        "default_image": DEFAULT_IMAGE, 
+                                                        "bidding_form": bidding_form ,
+                                                        "comment_form":comment_form,
+                                                        "listing_comments":listing_comments,
+                                                        "is_winner":is_winner,
+                                                        "is_owner":is_owner,
+                                                        "is_active":is_active,
+                                                        "is_in_watchlist":is_in_watchlist}) 
  
 def close_auction(request,id):
     if not request.user.is_authenticated:
@@ -141,7 +152,6 @@ def close_auction(request,id):
         return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
     else:
         return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
-        
 def bidding(request, id):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))
@@ -156,7 +166,9 @@ def bidding(request, id):
             bid.save()
             return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
         else:
-            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": form}) 
+            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing,
+                                                                "default_image": DEFAULT_IMAGE,
+                                                                "bidding_form": form}) 
 
     else:
         return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
@@ -176,7 +188,9 @@ def comment_view(request, id):
             comment.save()
             return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
         else:
-            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "comment_form": form}) 
+            return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing,
+                                                                "default_image": DEFAULT_IMAGE,
+                                                                "comment_form": form}) 
 
     else:
         return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
@@ -193,11 +207,36 @@ def category_listing(request,category):
     query_set= Category.objects.filter(name=category)
     category_obj = get_object_or_404(query_set)
     active_auctions = category_obj.auctionlisting_set.all()
-    return render(request, "auctions/category_list.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE,"category":category_obj})
+    return render(request, "auctions/category_list.html", {"active_auctions":active_auctions,
+                                                           "default_image":DEFAULT_IMAGE,
+                                                           "category":category_obj})
  
     
 def watchlist(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))  
     active_auctions = request.user.watchlist.all()
-    return render(request, "auctions/watchlist.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})
+    return render(request, "auctions/watchlist.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})        
+ 
+def add_to_watchlist(request,id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    auction_listing = get_object_or_404(AuctionListing , id=id)
+    if request.method == "POST":
+        auction_listing.watchers.add(request.user)
+        auction_listing.save()
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+    else:
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+
+def remove_from_watchlist(request,id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    auction_listing = get_object_or_404(AuctionListing , id=id) 
+    if request.method == "POST":
+        auction_listing.watchers.remove(request.user)
+        auction_listing.save()
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+    else:
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))   
+    

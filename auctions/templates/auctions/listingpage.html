@@ -8,6 +8,21 @@
     {% endif %}
     <div class="container-fluid">
         <h2>{{auction_listing.title}}</h2>
+        {% if is_in_watchlist %}
+            <form action="{% url 'auctions:remove_from_watchlist' id=auction_listing.id%}" method="post">
+                {% csrf_token %}
+                <div>
+                    <input class="mt-3 btn btn-secondary" type="submit" value=" Remove from Watchlist">
+                </div>
+            </form>
+        {% else %}
+            <form action="{% url 'auctions:add_to_watchlist' id=auction_listing.id%}" method="post">
+                {% csrf_token %}
+                <div>
+                    <input class="mt-3 btn btn-secondary" type="submit" value=" Add to Watchlist">
+                </div>
+            </form>
+        {% endif %}
         <img src={% firstof auction_listing.photo default_image %} class="mt-3 img-fluid" alt="Listing Image">
         <h4 class="mt-3"> {% firstof auction_listing.current_price auction_listing.starting_price %}</h4>
         <p>{{auction_listing.description}}</p>
