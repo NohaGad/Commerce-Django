@@ -37,28 +37,19 @@
                 <label for="id_price">{{ bidding_form.price.label }}:</label>
                 {{ bidding_form.price}}
             </div>
-            <input class="btn btn-primary" type="submit" value="Bid">
+            <input class="btn btn-primary" type="submit" value="Bid" {% if not auction_listing.is_active%} disabled {% endif %}>
         </form>
         {% if is_owner %}
-            {% if auction_listing.is_active %}
-                <div>
-                    <form action="{% url 'auctions:close' id=auction_listing.id %}" method="post">
-                        {% csrf_token %}
-                        <div>
-                            <input class="mt-3 btn btn-danger" type="submit" value="Close Auction">
-                        </div>
-                    </form>
-                </div>
-            {% else %}
-                <div>
-                    <form action="{% url 'auctions:close' id=auction_listing.id %}" method="post">
-                        {% csrf_token %}
-                        <div>
-                            <input class="mt-3 btn btn-danger" type="submit" value="Close Auction" disabled>
-                        </div>
-                    </form>
-                </div>
-            {% endif %}
+            <div>
+                <form action="{% url 'auctions:close' id=auction_listing.id %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                        <input class="mt-3 btn btn-danger" type="submit" value="Close Auction" 
+                            {% if not auction_listing.is_active%} disabled {% endif %}
+                            >
+                    </div>
+                </form>
+            </div>
         {% endif %}
         <div class="list-group">
             {% for comment in listing_comments %}

@@ -43,6 +43,8 @@ class Bid(models.Model):
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, default = None)
     
     def clean(self):
+        if not self.auction.is_active:
+            raise ValidationError({'price':"Auction must be active!!"})
         if self.auction.current_price == None and self.price < self.auction.starting_price:
             raise ValidationError({'price': f"Value must be greater than or equal starting price: {self.auction.starting_price}!"})    
         elif self.auction.current_price != None and self.price <= self.auction.current_price:
