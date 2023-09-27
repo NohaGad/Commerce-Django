@@ -3,17 +3,17 @@
 {% block body %}
     {% if is_winner %}
     <div class="alert alert-success" role="alert">
-        Congratulations You won this auction{{auction_listing.winner}}
+        Congratulations You won this auction {{auction_listing.winner}}
     </div>
     {% endif %}
     <div class="container-fluid">
         <h2>{{auction_listing.title}}</h2>
-        <img src={% firstof auction_listing.photo default_image %} class="img-fluid" alt="Listing Image">
+        <img src={% firstof auction_listing.photo default_image %} class="mt-3 img-fluid" alt="Listing Image">
         <h4 class="mt-3"> {% firstof auction_listing.current_price auction_listing.starting_price %}</h4>
         <p>{{auction_listing.description}}</p>
         <form action="{% url 'auctions:bidding' id=auction_listing.id %}"  method="post">
             {% csrf_token %}
-            <div class="form-group">
+            <div class="mt-3 form-group">
                 {% if bidding_form.price.errors %}
                     <div class="alert alert-danger" role="alert">
                         {{bidding_form.price.errors}}
@@ -24,9 +24,30 @@
             </div>
             <input class="btn btn-primary" type="submit" value="Bid">
         </form>
-        <div>
-            {% for comment in listing_comments %}
+        {% if is_owner %}
+            {% if auction_listing.is_active %}
                 <div>
+                    <form action="{% url 'auctions:close' id=auction_listing.id %}" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <input class="mt-3 btn btn-danger" type="submit" value="Close Auction">
+                        </div>
+                    </form>
+                </div>
+            {% else %}
+                <div>
+                    <form action="{% url 'auctions:close' id=auction_listing.id %}" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <input class="mt-3 btn btn-danger" type="submit" value="Close Auction" disabled>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        {% endif %}
+        <div class="list-group">
+            {% for comment in listing_comments %}
+                <div class="mt-3 list-group-item">
                     <h6 class="card-title"> {{comment.commenter}}</h6>
                     <p class="card-text">{{comment.text}}</p>
                 </div>
@@ -40,7 +61,7 @@
                         {{comment_form.text.errors}}
                      </div>
                 {% endif %}
-                <label for="id_text">Comment here:</label>
+                <label class="mt-3" for="id_text">Comment here:</label>
                 {{ comment_form.text}}
             </div>
             <input class="btn btn-primary" type="submit" value="Add a comment">

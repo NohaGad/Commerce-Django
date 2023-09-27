@@ -127,8 +127,21 @@ def listing(request, id):
     comment_form = CommentForm()
     listing_comments = Comment.objects.filter(auction = auction_listing)
     is_winner = request.user == auction_listing.winner
-    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments,"is_winner":is_winner}) 
-    
+    is_owner = request.user == auction_listing.owner
+    is_active = auction_listing.is_active
+    return render(request, "auctions/listingpage.html",{"auction_listing" : auction_listing , "default_image": DEFAULT_IMAGE, "bidding_form": bidding_form ,"comment_form":comment_form,"listing_comments":listing_comments,"is_winner":is_winner, "is_owner":is_owner,"is_active":is_active}) 
+ 
+def close_auction(request,id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    auction_listing = get_object_or_404(AuctionListing , id=id)
+    if request.method == "POST":
+        auction_listing.is_active = False
+        auction_listing.save()
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+    else:
+        return HttpResponseRedirect(reverse("auctions:listing",args=(id,)))
+        
 def bidding(request, id):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("auctions:login"))
@@ -188,6 +201,3 @@ def watchlist(request):
         return HttpResponseRedirect(reverse("auctions:login"))  
     active_auctions = request.user.watchlist.all()
     return render(request, "auctions/watchlist.html", {"active_auctions":active_auctions , "default_image":DEFAULT_IMAGE})
- 
-        
-        
