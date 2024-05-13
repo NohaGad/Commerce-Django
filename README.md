@@ -1,14 +1,59 @@
-﻿# Commerce-Django
-- **Models:** Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. It’s up to you to decide what fields each model should have, and what the types of those fields should be. You may have additional models if you would like.
-- **Create Listing:** Users should be able to visit a page to create a new listing. They should be able to specify a title for the listing, a text-based description, and what the starting bid should be. Users should also optionally be able to provide a URL for an image for the listing and/or a category (e.g. Fashion, Toys, Electronics, Home, etc.).
-Active Listings Page: The default route of your web application should let users view all of the currently active auction listings. For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
-- **Listing Page:** Clicking on a listing should take users to a page specific to that listing. On that page, users should be able to view all details about the listing, including the current price for the listing.
-    - If the user is signed in, the user should be able to add the item to their “Watchlist.” If the item is already on the watchlist, the user should be able to remove it.
-    - If the user is signed in, the user should be able to bid on the item. The bid must be at least as large as the starting bid, and must be greater than any other bids that have been placed        (if any).
-    - If the bid doesn’t meet those criteria, the user should be presented with an error.
-    - If the user is signed in and is the one who created the listing, the user should have the ability to “close” the auction from this page, which makes the highest bidder the winner of the         auction and makes the listing no longer active.
-    - If a user is signed in on a closed listing page, and the user has won that auction, the page should say so.
-    - Users who are signed in should be able to add comments to the listing page. The listing page should display all comments that have been made on the listing.
-- **Watchlist:** Users who are signed in should be able to visit a Watchlist page, which should display all of the listings that a user has added to their watchlist. Clicking on any of those listings should take the user to that listing’s page.
-- **Categories:** Users should be able to visit a page that displays a list of all listing categories. Clicking on the name of any category should take the user to a page that displays all of the active listings in that category.
-- **Django Admin Interface:** Via the Django admin interface, a site administrator should be able to view, add, edit, and delete any listings, comments, and bids made on the site.
+# Commerce Django
+
+![Python](https://img.shields.io/badge/Python-3.9-blue)
+![Django](https://img.shields.io/badge/Django-3.2-green)
+
+Commerce Django is a web application built with Django, allowing users to create auction listings, place bids, manage watchlists, and explore various categories of listings.
+
+## Features
+
+- **Models:** The application includes models for auction listings, bids, and comments. Users can create listings with a title, description, starting bid, and optional image and category.
+- **Create Listing:** Users can create new auction listings with details such as title, description, starting bid, and optional image and category.
+- **Active Listings Page:** Users can view all currently active auction listings, displaying key information like title, description, current price, and photo (if available).
+- **Listing Page:** Each listing has a dedicated page displaying all details, including current price. Signed-in users can add the listing to their watchlist, place bids, and close the auction if they are the creator.
+- **Watchlist:** Signed-in users can manage their watchlist, viewing all listings they've added and accessing each listing's details.
+- **Categories:** Users can explore listings by category, with each category displaying all active listings within it.
+- **Django Admin Interface:** Administrators have full control over listings, comments, and bids through the Django admin interface.
+
+## Installation
+
+### Prerequisites
+
+- Python 3.9 installed on your system.
+- Django 3.2 installed.
+
+### Instructions
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/NohaGad/Commerce-Django.git
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd Commerce-Django
+
+3. Run migrations:
+
+   ```bash
+   python manage.py migrate
+
+4. Start the development server:
+
+   ```bash
+   python manage.py runserver
+
+5. Access the application at `http://127.0.0.1:8000/`.
+
+## Usage
+1. Create a new auction listing by providing the required details.
+2. Explore active listings on the homepage and click on any listing to view its details.
+3. Add listings to your watchlist to keep track of them.
+4. Place bids on listings you're interested in and interact with comments made on listings.
+5. Browse listings by category to find items of interest.
+
+## Contributing
+Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
+
+
